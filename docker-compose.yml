@@ -1,0 +1,11 @@
+services:
+  my-app:
+    build: .
+    image: my-script:latest
+    container_name: my-app
+    ports:
+      - "127.0.0.1:8080:8080"
+    volumes:
+      - /mnt/logs/my-app:/var/www
+    restart: "no"
+    stop_grace_period: 15s

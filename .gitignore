@@ -1,1 +1,5 @@
 monitor.log
+*.img
+*.key
+*.crt
+__pycache__/

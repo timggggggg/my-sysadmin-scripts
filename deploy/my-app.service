@@ -1,0 +1,17 @@
+[Unit]
+Description=Monitoring container behind Nginx
+Requires=docker.service capstone-storage.service
+After=docker.service capstone-storage.service
+RequiresMountsFor=/mnt/logs
+
+[Service]
+Type=simple
+ExecStartPre=/usr/bin/mountpoint -q /mnt/logs
+ExecStart=/usr/bin/docker start -a my-app
+ExecStop=/usr/bin/docker stop --time 15 my-app
+Restart=on-failure
+RestartSec=3
+TimeoutStopSec=30
+
+[Install]
+WantedBy=multi-user.target

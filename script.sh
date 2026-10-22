@@ -1,7 +1,19 @@
 #!/usr/bin/env bash
 
-N=5
-LOG_FILE="monitor.log"
+set -euo pipefail
+
+N="${INTERVAL_SECONDS:-5}"
+LOG_FILE="${LOG_FILE:-monitor.log}"
+ONCE=false
+case "${1:-}" in
+    --once) ONCE=true ;;
+    '') ;;
+    *) printf 'Usage: %s [--once]\n' "$0" >&2; exit 2 ;;
+esac
+if [[ ! "$N" =~ ^[1-9][0-9]*$ ]]; then
+    printf 'INTERVAL_SECONDS must be a positive integer.\n' >&2
+    exit 2
+fi
 
 trap 'printf "\nМониторинг остановлен.\n"; exit 0' INT TERM
 
@@ -15,7 +27,12 @@ while true; do
         uptime &&
         printf '\n'
     } >> "$LOG_FILE"; then
-        sleep "$N" || exit 1
+        if "$ONCE"; then
+            printf 'One monitoring sample saved to %s.\n' "$LOG_FILE"
+            exit 0
+        fi
+        sleep "$N" &
+        wait $!
     else
         printf 'Ошибка: не удалось собрать или записать данные в %s.\n' "$LOG_FILE" >&2
         exit 1

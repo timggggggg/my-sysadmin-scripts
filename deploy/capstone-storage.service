@@ -1,0 +1,13 @@
+[Unit]
+Description=Restore capstone loop devices, RAID1 and LVM storage
+After=local-fs.target
+Before=my-app.service
+
+[Service]
+Type=oneshot
+ExecStart=/usr/local/lib/my-app/storage.sh
+RemainAfterExit=yes
+TimeoutStartSec=180
+
+[Install]
+WantedBy=multi-user.target
